@@ -1,0 +1,28 @@
+{
+	"name" : "kicaj/revision",
+	"description" : "Revision plugin for CakePHP",
+	"type" : "cakephp-plugin",
+	"license" : "MIT",
+	"support" : {
+		"issues" : "https://github.com/kicaj/revision/issues",
+		"source" : "https://github.com/kicaj/revision"
+	},
+	"authors" : [{
+			"name" : "kicaj",
+			"email" : "kicaj@kdev.pl",
+			"role" : "Author"
+		}, {
+			"name" : "Others",
+			"homepage" : "https://github.com/kicaj/revision/graphs/contributors"
+		}
+	],
+	"require" : {
+		"cakephp/cakephp" : "3.*"
+	},
+	"autoload" : {
+		"psr-4" : {
+			"Revision\\" : "src"
+		}
+	},
+	"minimum-stability" : "dev"
+}
