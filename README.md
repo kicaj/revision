@@ -11,10 +11,23 @@ It is developed for CakePHP 3.x.
 You can install plugin into your CakePHP application using [composer](http://getcomposer.org).
 
 The recommended way to install composer packages is:
-
 ```
 composer require kicaj/revision dev-master
 ```
+
+Load the Behavior
+---------------------
+
+Load the Behavior in your src/Model/Table/YourTable.php (or if You have AppTable.php). Your table should have two additionals columns: `revision_id` and `revision_hash`.
+```
+public function initialize(array $config)
+{
+    parent::initialize($config);
+
+    $this->addBehavior('Revision.Revision');
+}
+```
+The field `revision_id` should have the same type like primary key of tabel.
 
 ## TODOs
 
