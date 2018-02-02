@@ -34,3 +34,4 @@ The field `revision_id` should have the same type like primary key of tabel.
 - [ ] Check with complex conditions
 - [ ] Check configuration
 - [ ] Exceptions for missing columns
+- [ ] Create history view
