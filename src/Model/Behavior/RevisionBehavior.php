@@ -28,7 +28,7 @@ class RevisionBehavior extends Behavior
      */
     public function beforeSave(Event $event, EntityInterface $entity)
     {
-        $hash = mb_substr(Text::uuid(), 9, 12);
+        $hash = Text::uuid();
 
         $revision = $this->_table->newEntity();
 
