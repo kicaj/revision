@@ -31,7 +31,7 @@ The field `revision_id` should have the same type like primary key of tabel.
 
 ## TODOs
 
-- [ ] Fix update `modified` when deleted main parent
+- [ ] Block update `modified` field when highest parent is deleted
 - [ ] Check with complex conditions
 - [ ] Check configuration
 - [ ] Exceptions for missing columns
