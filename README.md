@@ -31,8 +31,10 @@ The field `revision_id` should have the same type like primary key of tabel.
 
 ## TODOs
 
-- [ ] Block update `modified` field when highest parent is deleted
+- [ ] Block updating `modified` field when highest parent is deleted
 - [ ] Check with complex conditions
 - [ ] Check configuration
-- [ ] Exceptions for missing columns
+- [ ] Exceptions for missing fields/columns
 - [ ] Create history view
+- [ ] Revert method
+- [ ] Field with hash should check unique before save (recurring)
