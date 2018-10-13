@@ -14,9 +14,7 @@ class RevisionBehavior extends Behavior
 {
 
     /**
-     * Default config
-     *
-     * @var array
+     * @inheritdoc
      */
     protected $_defaultConfig = [
         'prefix' => 'revision_',
@@ -24,7 +22,7 @@ class RevisionBehavior extends Behavior
     ];
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function beforeSave(Event $event, EntityInterface $entity)
     {
@@ -55,7 +53,7 @@ class RevisionBehavior extends Behavior
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function beforeFind(Event $event, Query $query)
     {
