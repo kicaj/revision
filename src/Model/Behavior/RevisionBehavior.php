@@ -28,10 +28,10 @@ class RevisionBehavior extends Behavior
     {
         $hash = Text::uuid();
 
-        $revision = $this->_table->newEntity();
+        $revision = $this->getTable()->newEntity();
 
-        $revision = $this->_table->find()->where([
-            $this->_table->getPrimaryKey() => $entity->{$this->_table->getPrimaryKey()}
+        $revision = $this->getTable()->find()->where([
+            $this->getTable()->getPrimaryKey() => $entity->{$this->getTable()->getPrimaryKey()}
         ])->first();
 
         if ($entity->isNew()) {
@@ -39,14 +39,14 @@ class RevisionBehavior extends Behavior
                 $entity->{$this->_config['prefix'] . $this->_config['field']} = $hash;
             }
         } else {
-            $revision->{$this->_config['prefix'] . $this->_table->getPrimaryKey()} = $entity->{$this->_table->getPrimaryKey()};
+            $revision->{$this->_config['prefix'] . $this->getTable()->getPrimaryKey()} = $entity->{$this->getTable()->getPrimaryKey()};
 
-            $revision->unsetProperty($this->_table->getPrimaryKey())->isNew(true);
+            $revision->unsetProperty($this->getTable()->getPrimaryKey())->isNew(true);
 
-            $this->_table->save($revision);
+            $this->getTable()->save($revision);
 
             // Disable foreign keys
-            $this->_table->connection()->disableForeignKeys();
+            $this->getTable()->connection()->disableForeignKeys();
 
             $entity->{$this->_config['prefix'] . $this->_config['field']} = $hash;
         }
@@ -57,13 +57,13 @@ class RevisionBehavior extends Behavior
      */
     public function beforeFind(Event $event, Query $query)
     {
-        if ($this->_table->hasField($this->_config['prefix'] . $this->_config['field'])) {
+        if ($this->getTable()->hasField($this->_config['prefix'] . $this->_config['field'])) {
             $revisioned = true;
 
             if ($query->clause('where')) {
                 $query->clause('where')->traverse(function ($expression) use (&$revisioned) {
                     if ($expression instanceof Comparison) {
-                        if ($expression->getField() === $this->_table->getAlias() . '.' . $this->_config['prefix'] . $this->_config['field']) {
+                        if ($expression->getField() === $this->getTable()->getAlias() . '.' . $this->_config['prefix'] . $this->_config['field']) {
                             $revisioned = false;
                         }
                     }
@@ -71,7 +71,7 @@ class RevisionBehavior extends Behavior
             }
 
             if ($revisioned === true) {
-                $query->where($this->_table->getAlias() . '.' . $this->_config['prefix'] . $this->_table->getPrimaryKey() . ' IS NULL');
+                $query->where($this->getTable()->getAlias() . '.' . $this->_config['prefix'] . $this->getTable()->getPrimaryKey() . ' IS NULL');
             }
         }
 
