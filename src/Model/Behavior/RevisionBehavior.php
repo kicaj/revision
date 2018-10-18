@@ -1,14 +1,14 @@
 <?php
 namespace Revision\Model\Behavior;
 
-use Cake\Datasource\EntityInterface;
 use Cake\ORM\Behavior;
+use Cake\Datasource\ConnectionManager;
+use Cake\Datasource\EntityInterface;
+use Cake\Database\Connection;
 use Cake\Database\Query;
 use Cake\Database\Expression\Comparison;
 use Cake\Event\Event;
 use Cake\Utility\Text;
-use Cake\Database\Connection;
-use Cake\Datasource\ConnectionManager;
 
 class RevisionBehavior extends Behavior
 {
@@ -18,8 +18,21 @@ class RevisionBehavior extends Behavior
      */
     protected $_defaultConfig = [
         'prefix' => 'revision_',
-        'field' => 'hash'
+        'field' => 'hash',
+        'relation' => 'Revisions',
     ];
+
+    /**
+     * @inheritdoc
+     */
+    public function initialize(array $config)
+    {
+        $this->getTable()->hasMany($this->_config['relation'], [
+            'className' => $this->getTable()->getRegistryAlias(),
+            'foreignKey' => 'revision_id',
+            'finder' => 'history',
+        ]);
+    }
 
     /**
      * @inheritdoc
@@ -46,7 +59,7 @@ class RevisionBehavior extends Behavior
             $this->getTable()->save($revision);
 
             // Disable foreign keys
-            $this->getTable()->connection()->disableForeignKeys();
+            $this->getTable()->getConnection()->disableForeignKeys();
 
             $entity->{$this->_config['prefix'] . $this->_config['field']} = $hash;
         }
@@ -74,6 +87,32 @@ class RevisionBehavior extends Behavior
                 $query->where($this->getTable()->getAlias() . '.' . $this->_config['prefix'] . $this->getTable()->getPrimaryKey() . ' IS NULL');
             }
         }
+
+        return $query;
+    }
+
+    /**
+     * Custom finder for get history of revisions
+     *
+     * @param Query $query The original query to modify
+     * @return \Cake\ORM\Query
+     */
+    public function findHistory(Query $query)
+    {
+        // Remove Revision Behavior
+        $this->getTable()->removeBehavior('Revision');
+
+        // Auto add foreign key
+        $query->select([
+            $this->getTable()->getAlias() . '.' . $this->getTable()->getPrimaryKey(),
+            $this->getTable()->getAlias() . '.' . $this->_config['prefix'] . $this->getTable()->getPrimaryKey(),
+            $this->getTable()->getAlias() . '.' . $this->_config['prefix'] . $this->_config['field'],
+        ]);
+
+        // Default ordering
+        $query->order([
+            $this->getTable()->getAlias() . '.' . $this->getTable()->getPrimaryKey() => 'DESC',
+        ]);
 
         return $query;
     }
