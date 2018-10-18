@@ -27,9 +27,10 @@ class RevisionBehavior extends Behavior
      */
     public function initialize(array $config)
     {
+        // Create dynamic relation
         $this->getTable()->hasMany($this->_config['relation'], [
             'className' => $this->getTable()->getRegistryAlias(),
-            'foreignKey' => 'revision_id',
+            'foreignKey' => $this->_config['prefix'] . $this->getTable()->getPrimaryKey(),
             'finder' => 'history',
         ]);
     }
