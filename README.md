@@ -27,7 +27,7 @@ public function initialize(array $config)
     $this->addBehavior('Revision.Revision');
 }
 ```
-The field `revision_id` should have the same type like primary key of tabel.
+The field `revision_id` should have the same type like primary key of table.
 
 ## TODOs
 
