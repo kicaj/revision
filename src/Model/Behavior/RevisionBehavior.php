@@ -25,7 +25,7 @@ class RevisionBehavior extends Behavior
     /**
      * @inheritdoc
      */
-    public function initialize(array $config)
+    public function initialize(array $config): void
     {
         // Create dynamic relation
         $this->getTable()->hasMany($this->_config['relation'], [
