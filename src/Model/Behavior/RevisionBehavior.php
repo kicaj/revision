@@ -42,7 +42,7 @@ class RevisionBehavior extends Behavior
     {
         $hash = Text::uuid();
 
-        $revision = $this->getTable()->newEntity();
+        $revision = $this->getTable()->newEmptyEntity();
 
         $revision = $this->getTable()->find()->where([
             $this->getTable()->getPrimaryKey() => $entity->{$this->getTable()->getPrimaryKey()}
