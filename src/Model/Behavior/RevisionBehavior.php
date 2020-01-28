@@ -45,7 +45,7 @@ class RevisionBehavior extends Behavior
         $revision = $this->getTable()->newEmptyEntity();
 
         $revision = $this->getTable()->find()->where([
-            $this->getTable()->getPrimaryKey() => $entity->{$this->getTable()->getPrimaryKey()}
+            $this->getTable()->getPrimaryKey() . ' IS' => $entity->{$this->getTable()->getPrimaryKey()}
         ])->first();
 
         if ($entity->isNew()) {
