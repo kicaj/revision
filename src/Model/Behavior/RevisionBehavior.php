@@ -55,7 +55,7 @@ class RevisionBehavior extends Behavior
         } else {
             $revision->{$this->_config['prefix'] . $this->getTable()->getPrimaryKey()} = $entity->{$this->getTable()->getPrimaryKey()};
 
-            $revision->unsetProperty($this->getTable()->getPrimaryKey())->isNew(true);
+            $revision->unsetProperty($this->getTable()->getPrimaryKey())->setNew(true);
 
             $this->getTable()->save($revision);
 
