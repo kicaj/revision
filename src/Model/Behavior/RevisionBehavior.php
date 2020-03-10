@@ -28,9 +28,9 @@ class RevisionBehavior extends Behavior
     public function initialize(array $config): void
     {
         // Create dynamic relation
-        $this->getTable()->hasMany($this->_config['relation'], [
+        $this->getTable()->hasMany($this->getConfig('relation'), [
             'className' => $this->getTable()->getRegistryAlias(),
-            'foreignKey' => $this->_config['prefix'] . $this->getTable()->getPrimaryKey(),
+            'foreignKey' => $this->getConfig('prefix') . $this->getTable()->getPrimaryKey(),
             'finder' => 'history',
         ]);
     }
@@ -49,11 +49,11 @@ class RevisionBehavior extends Behavior
         ])->first();
 
         if ($entity->isNew()) {
-            if (!isset($entity->{$this->_config['prefix'] . $this->_config['field']})) {
-                $entity->{$this->_config['prefix'] . $this->_config['field']} = $hash;
+            if (!isset($entity->{$this->getConfig('prefix') . $this->getConfig('field')})) {
+                $entity->{$this->getConfig('prefix') . $this->getConfig('field')} = $hash;
             }
         } else {
-            $revision->{$this->_config['prefix'] . $this->getTable()->getPrimaryKey()} = $entity->{$this->getTable()->getPrimaryKey()};
+            $revision->{$this->getConfig('prefix') . $this->getTable()->getPrimaryKey()} = $entity->{$this->getTable()->getPrimaryKey()};
 
             $revision->unsetProperty($this->getTable()->getPrimaryKey())->setNew(true);
 
@@ -62,7 +62,7 @@ class RevisionBehavior extends Behavior
             // Disable foreign keys
             $this->getTable()->getConnection()->disableForeignKeys();
 
-            $entity->{$this->_config['prefix'] . $this->_config['field']} = $hash;
+            $entity->{$this->getConfig('prefix') . $this->getConfig('field')} = $hash;
         }
     }
 
@@ -71,13 +71,13 @@ class RevisionBehavior extends Behavior
      */
     public function beforeFind(Event $event, Query $query)
     {
-        if ($this->getTable()->hasField($this->_config['prefix'] . $this->_config['field'])) {
+        if ($this->getTable()->hasField($this->getConfig('prefix') . $this->getConfig('field'))) {
             $revisioned = true;
 
             if ($query->clause('where')) {
                 $query->clause('where')->traverse(function ($expression) use (&$revisioned) {
                     if ($expression instanceof Comparison) {
-                        if ($expression->getField() === $this->getTable()->getAlias() . '.' . $this->_config['prefix'] . $this->_config['field']) {
+                        if ($expression->getField() === $this->getTable()->getAlias() . '.' . $this->getConfig('prefix') . $this->getConfig('field')) {
                             $revisioned = false;
                         }
                     }
@@ -85,7 +85,7 @@ class RevisionBehavior extends Behavior
             }
 
             if ($revisioned === true) {
-                $query->where($this->getTable()->getAlias() . '.' . $this->_config['prefix'] . $this->getTable()->getPrimaryKey() . ' IS NULL');
+                $query->where($this->getTable()->getAlias() . '.' . $this->getConfig('prefix') . $this->getTable()->getPrimaryKey() . ' IS NULL');
             }
         }
 
@@ -106,8 +106,8 @@ class RevisionBehavior extends Behavior
         // Auto add foreign key
         $query->select([
             $this->getTable()->getAlias() . '.' . $this->getTable()->getPrimaryKey(),
-            $this->getTable()->getAlias() . '.' . $this->_config['prefix'] . $this->getTable()->getPrimaryKey(),
-            $this->getTable()->getAlias() . '.' . $this->_config['prefix'] . $this->_config['field'],
+            $this->getTable()->getAlias() . '.' . $this->getConfig('prefix') . $this->getTable()->getPrimaryKey(),
+            $this->getTable()->getAlias() . '.' . $this->getConfig('prefix') . $this->getConfig('field'),
         ]);
 
         // Default ordering
