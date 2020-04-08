@@ -14,7 +14,7 @@ class RevisionBehavior extends Behavior
 {
 
     /**
-     * @inheritdoc
+     * {@inheritDoc}
      */
     protected $_defaultConfig = [
         'prefix' => 'revision_',
@@ -23,11 +23,11 @@ class RevisionBehavior extends Behavior
     ];
 
     /**
-     * @inheritdoc
+     * {@inheritDoc}
      */
     public function initialize(array $config): void
     {
-        // Create dynamic relation
+        // Create dynamic relation.
         $this->getTable()->hasMany($this->getConfig('relation'), [
             'className' => $this->getTable()->getRegistryAlias(),
             'foreignKey' => $this->getConfig('prefix') . $this->getTable()->getPrimaryKey(),
@@ -36,38 +36,40 @@ class RevisionBehavior extends Behavior
     }
 
     /**
-     * @inheritdoc
+     * {@inheritDoc}
      */
     public function beforeSave(Event $event, EntityInterface $entity)
     {
         $hash = Text::uuid();
-
-        $revision = $this->getTable()->newEmptyEntity();
-
-        $revision = $this->getTable()->find()->where([
-            $this->getTable()->getPrimaryKey() . ' IS' => $entity->{$this->getTable()->getPrimaryKey()}
-        ])->first();
 
         if ($entity->isNew()) {
             if (!isset($entity->{$this->getConfig('prefix') . $this->getConfig('field')})) {
                 $entity->{$this->getConfig('prefix') . $this->getConfig('field')} = $hash;
             }
         } else {
-            $revision->{$this->getConfig('prefix') . $this->getTable()->getPrimaryKey()} = $entity->{$this->getTable()->getPrimaryKey()};
+            $revision = $this->getTable()->find()->select($this->getTable())->where([
+                $this->getTable()->getPrimaryKey() . ' IS' => $entity->{$this->getTable()->getPrimaryKey()}
+            ]);
 
-            $revision->unsetProperty($this->getTable()->getPrimaryKey())->setNew(true);
+            if (!$revision->isEmpty()) {
+                $revision = $revision->first();
 
-            $this->getTable()->save($revision);
+                $revision->{$this->getConfig('prefix') . $this->getTable()->getPrimaryKey()} = $entity->{$this->getTable()->getPrimaryKey()};
 
-            // Disable foreign keys
-            $this->getTable()->getConnection()->disableForeignKeys();
+                $revision->unsetProperty($this->getTable()->getPrimaryKey())->setNew(true);
 
-            $entity->{$this->getConfig('prefix') . $this->getConfig('field')} = $hash;
+                $this->getTable()->saveOrFail($revision);
+
+                // Disable foreign keys.
+                $this->getTable()->getConnection()->disableForeignKeys();
+
+                $entity->{$this->getConfig('prefix') . $this->getConfig('field')} = $hash;
+            }
         }
     }
 
     /**
-     * @inheritdoc
+     * {@inheritDoc}
      */
     public function beforeFind(Event $event, Query $query)
     {
@@ -93,24 +95,25 @@ class RevisionBehavior extends Behavior
     }
 
     /**
-     * Custom finder for get history of revisions
+     * Custom finder history revisions
      *
-     * @param Query $query The original query to modify
-     * @return \Cake\ORM\Query
+     * @param Query $query Query object.
+     * @param array $options The options for the find.
+     * @return Query The query builder.
      */
-    public function findHistory(Query $query)
+    public function findHistory(Query $query, array $options): Query
     {
-        // Remove Revision Behavior
+        // Remove Revision Behavior.
         $this->getTable()->removeBehavior('Revision');
 
-        // Auto add foreign key
+        // Auto add foreign key.
         $query->select([
             $this->getTable()->getAlias() . '.' . $this->getTable()->getPrimaryKey(),
             $this->getTable()->getAlias() . '.' . $this->getConfig('prefix') . $this->getTable()->getPrimaryKey(),
             $this->getTable()->getAlias() . '.' . $this->getConfig('prefix') . $this->getConfig('field'),
         ]);
 
-        // Default ordering
+        // Default ordering.
         $query->order([
             $this->getTable()->getAlias() . '.' . $this->getTable()->getPrimaryKey() => 'DESC',
         ]);
