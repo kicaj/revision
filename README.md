@@ -38,3 +38,4 @@ The field `revision_id` should have the same type like primary key of table.
 - [ ] Create history view
 - [ ] Revert method
 - [ ] Field with hash should check unique before save (recurring)
+- [ ] Set excluded fields
