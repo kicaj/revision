@@ -58,6 +58,13 @@ class RevisionBehavior extends Behavior
 
                 $revision->unsetProperty($this->getTable()->getPrimaryKey())->setNew(true);
 
+                // Accessibility of fields
+                if (!empty($accessible = $this->getConfig('accessible'))) {
+                    foreach ($accessible as $accessibleProperty => $accessibleSet) {
+                        $revision->setAccess($accessibleProperty, $accessibleSet);
+                    }
+                }
+
                 $this->getTable()->saveOrFail($revision);
 
                 // Disable foreign keys.
