@@ -20,6 +20,7 @@ class RevisionBehavior extends Behavior
         'prefix' => 'revision_',
         'field' => 'hash',
         'relation' => 'Revisions',
+        'options' => [],
     ];
 
     /**
@@ -65,7 +66,7 @@ class RevisionBehavior extends Behavior
                     }
                 }
 
-                $this->getTable()->saveOrFail($revision);
+                $this->getTable()->saveOrFail($revision, $this->getConfig('options'));
 
                 // Disable foreign keys.
                 $this->getTable()->getConnection()->disableForeignKeys();
